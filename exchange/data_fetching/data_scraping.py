@@ -5,7 +5,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "exchange.settings")
 django.setup()
 
 
-from datetime import datetime
+from datetime import date
 from pathlib import Path
 
 from exchange_app.models import ExchangeRate
@@ -32,21 +32,14 @@ class Dispatcher:
         cleaned_data = map(lambda xml: DataCleaner(xml), parsed_data)
 
         for data in cleaned_data:
-            print(
-                type(float(data.exchange_rate)),
-                float(data.exchange_rate),
-                type(data.base_currency),
-                data.base_currency,
-                type(data.target_currency),
-                data.target_currency,
-                type(datetime(*map(lambda x: int(x), data.date.split("-")))),
-                datetime(*map(lambda x: int(x), data.date.split("-"))),
-            )
-            ExchangeRate.objects.create(
-                exchange_rate=data.exchange_rate,
+            # all fields are fine
+            # since course won't change per given day
+            # (hopefully)
+            ExchangeRate.objects.get_or_create(
                 base_currency=data.base_currency,
                 target_currency=data.target_currency,
-                date=datetime(*map(lambda x: int(x), data.date.split("-"))),
+                date=date(*map(lambda x: int(x), data.date.split("-"))),
+                defaults={"exchange_rate": data.exchange_rate},
             )
 
 
