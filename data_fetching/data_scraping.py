@@ -1,12 +1,13 @@
-from pathlib import Path
-import xmltodict
-import requests
 from datetime import datetime
+from pathlib import Path
+
+import requests
+import xmltodict
 from dateutil.parser import parse
 
 
 class Dispatcher:
-    def __init__(self, links_list_path):
+    def __init__(self, links_list_path: Path):
         self.links_list_path = links_list_path
 
     @property
@@ -34,11 +35,12 @@ class Dispatcher:
 
 
 class DataFetcher:
-    def __init__(self, link):
+    def __init__(self, link: str, req_module=requests):
         self.link = link
+        self.req_module = req_module
 
-    def make_request(self):
-        data = requests.get(self.link)
+    def make_request(self) -> str:
+        data = self.req_module.get(self.link)
         if data.status_code == 200:
             return data.text
         else:
@@ -46,15 +48,16 @@ class DataFetcher:
 
 
 class DataParser:
-    def __init__(self, raw_data):
+    def __init__(self, raw_data: str, data_parser=xmltodict):
         self.raw_data = raw_data
+        self.data_parser = data_parser
 
-    def parse_data(self):
-        return xmltodict.parse(self.raw_data)
+    def parse_data(self) -> str:
+        return self.data_parser.parse(self.raw_data)
 
 
 class DataCleaner:
-    def __init__(self, data):
+    def __init__(self, data: dict):
         self.data = data
 
     @property
@@ -84,4 +87,3 @@ if __name__ == "__main__":
     # loading defined path, can be changed in the future
     path = Path(__file__).absolute().parent.joinpath("links.txt")
     Dispatcher(path).run()
-
