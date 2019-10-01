@@ -1,0 +1,15 @@
+version: '3'
+services:
+  web:
+    image: scraper
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./exchange/db:/app/exchange/db
+    command: python3 manage.py runserver 0.0.0.0:8000
+    # this is not a production ready release
+  crawler:
+    image: scraper
+    volumes:
+      - ./exchange/db:/app/exchange/db
+    command: python3 data_fetching/crawler.py

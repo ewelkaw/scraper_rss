@@ -10,4 +10,4 @@ while True:
     Dispatcher(path).run()
     print("Task finished")
     sys.stdout.flush()
-    time.sleep(60 * 10)
+    time.sleep(60 * 10)  # every ten minutes

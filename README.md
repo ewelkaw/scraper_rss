@@ -1,6 +1,11 @@
 # scraper_rss
 RSS scraper for reading exchange rates from the European Central Bank web page.
 
+## RUNNING APP:
+
+1. make build
+2. make run
+
 ## API USAGE:
 1. There is a possibility to use currency shortcut to get all data for given currency like below:
 http://127.0.0.1:8000/api/exchange_rates/all/PLN
@@ -60,7 +65,7 @@ Remember to add super user before using that:
 python manage.py createsuperuser
 ```
 
-## Tests
+## TESTS
 
 ### Django tests
 
