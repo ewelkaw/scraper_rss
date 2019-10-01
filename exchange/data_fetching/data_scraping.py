@@ -1,5 +1,14 @@
+import os
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "exchange.settings")
+django.setup()
+
+
 from datetime import datetime
 from pathlib import Path
+
+from exchange_app.models import ExchangeRate
 
 import requests
 import xmltodict
@@ -21,17 +30,24 @@ class Dispatcher:
         filtered_data = filter(lambda x: x != "", raw_data)
         parsed_data = map(lambda rss: DataParser(rss).parse_data(), filtered_data)
         cleaned_data = map(lambda xml: DataCleaner(xml), parsed_data)
+
         for data in cleaned_data:
             print(
-                "data:",
-                data.exchange_rate,
+                type(float(data.exchange_rate)),
+                float(data.exchange_rate),
+                type(data.base_currency),
                 data.base_currency,
+                type(data.target_currency),
                 data.target_currency,
-                data.date,
+                type(datetime(*map(lambda x: int(x), data.date.split("-")))),
+                datetime(*map(lambda x: int(x), data.date.split("-"))),
             )
-            # ExchangeRate(
-            #     data.exchange_rate, data.base_currency, data.target_currency, data.date
-            # )
+            ExchangeRate.objects.create(
+                exchange_rate=data.exchange_rate,
+                base_currency=data.base_currency,
+                target_currency=data.target_currency,
+                date=datetime(*map(lambda x: int(x), data.date.split("-"))),
+            )
 
 
 class DataFetcher:
