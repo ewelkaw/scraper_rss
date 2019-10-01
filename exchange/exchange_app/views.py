@@ -6,15 +6,10 @@ from rest_framework import status
 from .models import ExchangeRate
 from .serializers import ExchangeRateSerializer
 
-# Create your views here.
-
 
 @api_view(["GET"])
 def get_exchange_rate_for_currency(request, currency):
-    try:
-        rate = ExchangeRate.objects.filter(target_currency=currency).order_by("date")
-    except ExchangeRate.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    rate = ExchangeRate.objects.filter(target_currency=currency).order_by("date")
     serializer = ExchangeRateSerializer(rate, many=True)
 
     # get all records for a single currency shortcut
@@ -23,13 +18,10 @@ def get_exchange_rate_for_currency(request, currency):
 
 @api_view(["GET"])
 def get_last_exchange_rate_for_currency(request, currency):
-    try:
-        rate = (
-            ExchangeRate.objects.filter(target_currency=currency)
-            .order_by("date")
-            .first()
-        )
-    except ExchangeRate.DoesNotExist:
+    rate = (
+        ExchangeRate.objects.filter(target_currency=currency).order_by("-date").first()
+    )
+    if not rate:
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = ExchangeRateSerializer(rate, many=False)
 
@@ -43,8 +35,8 @@ def get_exchange_rate_for_date(request, given_date):
         rates = ExchangeRate.objects.filter(
             date=date(*map(lambda x: int(x), given_date.split("-")))
         )
-    except ExchangeRate.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except ValueError:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     serializer = ExchangeRateSerializer(rates, many=True)
 

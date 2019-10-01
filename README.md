@@ -53,3 +53,25 @@ RESPONSE:
 ```
 
 ## To use django-admin: http://127.0.0.1:8000/admin/ 
+
+Remember to add super user before using that:
+
+```
+python manage.py createsuperuser
+```
+
+## Tests
+
+### Django tests
+
+```
+cd exchange
+python manage.py test
+```
+
+### Fetcher test
+
+```
+cd exchange
+pytest tests/
+```

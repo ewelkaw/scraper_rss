@@ -16,3 +16,6 @@ class ExchangeRate(models.Model):
     base_currency = models.CharField(max_length=3)
     target_currency = models.CharField(max_length=3)
     date = models.DateField()
+
+    def __str__(self):
+        return f"[{self.date}] {self.base_currency}/{self.target_currency}: {self.exchange_rate}"

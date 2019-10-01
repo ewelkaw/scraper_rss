@@ -33,7 +33,7 @@ class Dispatcher:
 
         for data in cleaned_data:
             # all fields are fine
-            # since course won't change per given day
+            # since rate won't change per given day
             # (hopefully)
             ExchangeRate.objects.get_or_create(
                 base_currency=data.base_currency,
@@ -44,11 +44,11 @@ class Dispatcher:
 
 
 class DataFetcher:
-    def __init__(self, link: str, req_module=requests):
+    def __init__(self, link, req_module=requests):
         self.link = link
         self.req_module = req_module
 
-    def make_request(self) -> str:
+    def make_request(self):
         data = self.req_module.get(self.link)
         if data.status_code == 200:
             return data.text
@@ -57,11 +57,11 @@ class DataFetcher:
 
 
 class DataParser:
-    def __init__(self, raw_data: str, data_parser=xmltodict):
+    def __init__(self, raw_data, data_parser=xmltodict):
         self.raw_data = raw_data
         self.data_parser = data_parser
 
-    def parse_data(self) -> str:
+    def parse_data(self):
         return self.data_parser.parse(self.raw_data)
 
 
