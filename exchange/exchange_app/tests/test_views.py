@@ -1,29 +1,26 @@
 from django.test import TestCase
-from exchange_app.models import ExchangeRate
-
+from exchange_app.models import ExchangeRate, Currency
 from collections import OrderedDict
 
 
 class ExchangeRateViewsTest(TestCase):
     @classmethod
     def setUpTestData(cls):
+        currency_eur = Currency.objects.create(
+            base_currency="EUR", target_currency="PLN"
+        )
+        currency_gbp = Currency.objects.create(
+            base_currency="EUR", target_currency="GBP"
+        )
+
         ExchangeRate.objects.create(
-            exchange_rate=1.02,
-            base_currency="EUR",
-            target_currency="PLN",
-            date="2019-01-01",
+            exchange_rate=1.02, currency=currency_eur, date="2019-01-01"
         )
         ExchangeRate.objects.create(
-            exchange_rate=1.03,
-            base_currency="EUR",
-            target_currency="PLN",
-            date="2019-01-02",
+            exchange_rate=1.03, currency=currency_eur, date="2019-01-02"
         )
         ExchangeRate.objects.create(
-            exchange_rate=1.04,
-            base_currency="EUR",
-            target_currency="GBP",
-            date="2019-01-02",
+            exchange_rate=1.04, currency=currency_gbp, date="2019-01-02"
         )
 
     def test_get_exchange_rate_for_currency(self):
@@ -35,17 +32,25 @@ class ExchangeRateViewsTest(TestCase):
                 OrderedDict(
                     [
                         ("exchange_rate", "1.02000000"),
-                        ("base_currency", "EUR"),
-                        ("target_currency", "PLN"),
                         ("date", "2019-01-01"),
+                        (
+                            "currency",
+                            OrderedDict(
+                                [("base_currency", "EUR"), ("target_currency", "PLN")]
+                            ),
+                        ),
                     ]
                 ),
                 OrderedDict(
                     [
                         ("exchange_rate", "1.03000000"),
-                        ("base_currency", "EUR"),
-                        ("target_currency", "PLN"),
                         ("date", "2019-01-02"),
+                        (
+                            "currency",
+                            OrderedDict(
+                                [("base_currency", "EUR"), ("target_currency", "PLN")]
+                            ),
+                        ),
                     ]
                 ),
             ],
@@ -56,14 +61,13 @@ class ExchangeRateViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data,
-            OrderedDict(
-                [
-                    ("exchange_rate", "1.03000000"),
-                    ("base_currency", "EUR"),
-                    ("target_currency", "PLN"),
-                    ("date", "2019-01-02"),
-                ]
-            ),
+            {
+                "exchange_rate": "1.03000000",
+                "date": "2019-01-02",
+                "currency": OrderedDict(
+                    [("base_currency", "EUR"), ("target_currency", "PLN")]
+                ),
+            },
         )
 
     def test_get_exchange_rate_for_date(self):
@@ -75,17 +79,25 @@ class ExchangeRateViewsTest(TestCase):
                 OrderedDict(
                     [
                         ("exchange_rate", "1.03000000"),
-                        ("base_currency", "EUR"),
-                        ("target_currency", "PLN"),
                         ("date", "2019-01-02"),
+                        (
+                            "currency",
+                            OrderedDict(
+                                [("base_currency", "EUR"), ("target_currency", "PLN")]
+                            ),
+                        ),
                     ]
                 ),
                 OrderedDict(
                     [
                         ("exchange_rate", "1.04000000"),
-                        ("base_currency", "EUR"),
-                        ("target_currency", "GBP"),
                         ("date", "2019-01-02"),
+                        (
+                            "currency",
+                            OrderedDict(
+                                [("base_currency", "EUR"), ("target_currency", "GBP")]
+                            ),
+                        ),
                     ]
                 ),
             ],

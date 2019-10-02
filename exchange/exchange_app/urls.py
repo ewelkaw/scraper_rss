@@ -9,12 +9,12 @@ from exchange_app.views import (
 
 urlpatterns = [
     url(
-        r"^api/exchange_rates/all/(?P<currency>[A-Z]{3})$",
+        r"^api/exchange_rates/all/(?P<currency_shortcut>[A-Z]{3})$",
         get_exchange_rate_for_currency,
         name="get_exchange_rate_for_currency",
     ),
     url(
-        r"^api/exchange_rates/(?P<currency>[A-Z]{3})$",
+        r"^api/exchange_rates/(?P<currency_shortcut>[A-Z]{3})$",
         get_last_exchange_rate_for_currency,
         name="get_last_exchange_rate_for_currency",
     ),
