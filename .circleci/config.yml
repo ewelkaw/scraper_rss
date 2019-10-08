@@ -56,4 +56,4 @@ jobs:
           command: |
             . venv/bin/activate
             cd exchange
-            pytest tests/
+            PYTHONPATH="." pytest tests/
