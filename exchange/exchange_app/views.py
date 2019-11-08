@@ -4,12 +4,14 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import ExchangeRate
-from .serializers import ExchangeRateSerializer
+from .serializers import ExchangeRateSerializer, CurrencySerializer
 
 
 @api_view(["GET"])
-def get_exchange_rate_for_currency(request, currency):
-    rate = ExchangeRate.objects.filter(target_currency=currency).order_by("date")
+def get_exchange_rate_for_currency(request, currency_shortcut):
+    rate = ExchangeRate.objects.filter(
+        currency__target_currency=currency_shortcut
+    ).order_by("date")
     serializer = ExchangeRateSerializer(rate, many=True)
 
     # get all records for a single currency shortcut
@@ -17,9 +19,11 @@ def get_exchange_rate_for_currency(request, currency):
 
 
 @api_view(["GET"])
-def get_last_exchange_rate_for_currency(request, currency):
+def get_last_exchange_rate_for_currency(request, currency_shortcut):
     rate = (
-        ExchangeRate.objects.filter(target_currency=currency).order_by("-date").first()
+        ExchangeRate.objects.filter(currency__target_currency=currency_shortcut)
+        .order_by("-date")
+        .first()
     )
     if not rate:
         return Response(status=status.HTTP_404_NOT_FOUND)

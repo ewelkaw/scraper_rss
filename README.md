@@ -14,10 +14,12 @@ RESPONSE:
 ```
 [
     {
-        "exchange_rate": "4.37740000",
-        "base_currency": "EUR",
-        "target_currency": "PLN",
-        "date": "2019-10-01"
+        "exchange_rate": "4.36980000",
+        "date": "2019-10-02",
+        "currency": {
+            "base_currency": "EUR",
+            "target_currency": "PLN"
+        }
     }
 ]
 ```
@@ -28,31 +30,37 @@ http://127.0.0.1:8000/api/exchange_rates/PLN
 RESPONSE:
 ```
 {
-    "exchange_rate": "4.37740000",
-    "base_currency": "EUR",
-    "target_currency": "PLN",
-    "date": "2019-10-01"
+    "exchange_rate": "4.36980000",
+    "date": "2019-10-02",
+    "currency": {
+        "base_currency": "EUR",
+        "target_currency": "PLN"
+    }
 }
 ```
 
 3. There is also a possibility to use date to get proper data like below:
-http://127.0.0.1:8000/api/exchange_rates/2019-10-01
+http://127.0.0.1:8000/api/exchange_rates/2019-10-02
 
 RESPONSE:
 ```
 [
     {
-        "exchange_rate": "1.08980000",
-        "base_currency": "EUR",
-        "target_currency": "USD",
-        "date": "2019-10-01"
+        "exchange_rate": "1.09250000",
+        "date": "2019-10-02",
+        "currency": {
+            "base_currency": "EUR",
+            "target_currency": "USD"
+        }
     },
     ...
     {
-        "exchange_rate": "16.67000000",
-        "base_currency": "EUR",
-        "target_currency": "ZAR",
-        "date": "2019-10-01"
+        "exchange_rate": "16.66270000",
+        "date": "2019-10-02",
+        "currency": {
+            "base_currency": "EUR",
+            "target_currency": "ZAR"
+        }
     }
 ]
 ```

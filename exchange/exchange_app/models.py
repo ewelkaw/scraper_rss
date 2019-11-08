@@ -1,9 +1,20 @@
 from django.db import models
 
-"""
-Maybe there should be a different data structure implemented, 
-but I thought that there is no need at this point to make relations because there is finite amoutn of currencies. 
-"""
+
+class Currency(models.Model):
+    """
+    Curriencies Model
+    Defines the pairs of base and target currency.
+    """
+
+    base_currency = models.CharField(max_length=3, null=False)
+    target_currency = models.CharField(max_length=3, null=False)
+
+    class Meta:
+        unique_together = ("base_currency", "target_currency")
+
+    def __str__(self):
+        return f"{self.base_currency}/{self.target_currency}"
 
 
 class ExchangeRate(models.Model):
@@ -13,9 +24,11 @@ class ExchangeRate(models.Model):
     """
 
     exchange_rate = models.DecimalField(decimal_places=8, max_digits=16)
-    base_currency = models.CharField(max_length=3)
-    target_currency = models.CharField(max_length=3)
+    currency = models.ForeignKey(
+        Currency, related_name="currency", on_delete=models.CASCADE, null=False
+    )
     date = models.DateField()
 
     def __str__(self):
-        return f"[{self.date}] {self.base_currency}/{self.target_currency}: {self.exchange_rate}"
+        return f"exchange rate value {self.exchange_rate}|{self.date}"
+

@@ -8,7 +8,7 @@ django.setup()
 from datetime import date
 from pathlib import Path
 
-from exchange_app.models import ExchangeRate
+from exchange_app.models import ExchangeRate, Currency
 
 import requests
 import xmltodict
@@ -35,9 +35,11 @@ class Dispatcher:
             # all fields are fine
             # since rate won't change per given day
             # (hopefully)
+            currency, _ = Currency.objects.get_or_create(
+                base_currency=data.base_currency, target_currency=data.target_currency
+            )
             ExchangeRate.objects.get_or_create(
-                base_currency=data.base_currency,
-                target_currency=data.target_currency,
+                currency=currency,
                 date=date(*map(lambda x: int(x), data.date.split("-"))),
                 defaults={"exchange_rate": data.exchange_rate},
             )
