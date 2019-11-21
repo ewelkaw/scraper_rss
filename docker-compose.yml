@@ -2,14 +2,30 @@ version: '3'
 services:
   web:
     image: scraper
+    links:
+      - crawler
+      - redis
     ports:
       - "8000:8000"
     volumes:
       - ./exchange/db:/app/exchange/db
     command: python3 manage.py runserver 0.0.0.0:8000
     # this is not a production ready release
+  redis:
+    image: redis
   crawler:
     image: scraper
+    environment:
+      PYTHONPATH: .
+    links:
+      - redis
     volumes:
       - ./exchange/db:/app/exchange/db
-    command: python3 data_fetching/crawler.py
+    command: celery -A data_fetching.celery_scheduler worker
+  heartbeat:
+    image: scraper
+    environment:
+      PYTHONPATH: .
+    links:
+      - redis
+    command: celery -A data_fetching.celery_scheduler beat
