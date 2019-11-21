@@ -25,8 +25,12 @@ class Dispatcher:
             data = map(lambda x: x.strip(), f.readlines())
         return data
 
+    @app.task
+    def prepare_raw_data(link):
+        return DataFetcher(link).make_request()
+
     def run(self):
-        raw_data = map(lambda link: DataFetcher(link).make_request(), self.links_list)
+        raw_data = map(lambda link: prepare_raw_data(link), self.links_list)
         filtered_data = filter(lambda x: x != "", raw_data)
         parsed_data = map(lambda rss: DataParser(rss).parse_data(), filtered_data)
         cleaned_data = map(lambda xml: DataCleaner(xml), parsed_data)

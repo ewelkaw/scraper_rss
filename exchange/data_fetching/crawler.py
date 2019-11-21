@@ -3,6 +3,7 @@ import time
 from pathlib import Path
 from data_fetching.data_scraping import Dispatcher
 
+
 while True:
     print("Scraping")
     sys.stdout.flush()
