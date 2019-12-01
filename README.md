@@ -7,6 +7,7 @@ RSS scraper for reading exchange rates from the European Central Bank web page.
 2. make run
 3. make migrate
 4. make makemigrations
+5. make createsuperuser
 
 ## API USAGE:
 1. There is a possibility to use currency shortcut to get all data for given currency like below:
@@ -72,7 +73,7 @@ RESPONSE:
 Remember to add super user before using that:
 
 ```
-python manage.py createsuperuser
+make createsuperuser
 ```
 
 ## TESTS

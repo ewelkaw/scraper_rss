@@ -17,3 +17,6 @@ test-django:
 
 test-python:
 	docker run -it --rm scraper pytest tests/
+
+createsuperuser:
+	docker run -it -v "$(PWD)/exchange/db:/app/exchange/db" --rm scraper python3 manage.py createsuperuser
