@@ -9,10 +9,12 @@ from datetime import date
 from pathlib import Path
 
 from exchange_app.models import ExchangeRate, Currency
-
+from celery.decorators import task
 import requests
 import xmltodict
 from dateutil.parser import parse
+
+from data_fetching.celery import celery_app
 
 
 class Dispatcher:
@@ -25,28 +27,32 @@ class Dispatcher:
             data = map(lambda x: x.strip(), f.readlines())
         return data
 
-    @app.task
+    @staticmethod
     def prepare_raw_data(link):
         return DataFetcher(link).make_request()
 
     def run(self):
-        raw_data = map(lambda link: prepare_raw_data(link), self.links_list)
-        filtered_data = filter(lambda x: x != "", raw_data)
-        parsed_data = map(lambda rss: DataParser(rss).parse_data(), filtered_data)
-        cleaned_data = map(lambda xml: DataCleaner(xml), parsed_data)
+        for link in self.links_list:
+            self.single_pass.delay(link)
 
-        for data in cleaned_data:
-            # all fields are fine
-            # since rate won't change per given day
-            # (hopefully)
-            currency, _ = Currency.objects.get_or_create(
-                base_currency=data.base_currency, target_currency=data.target_currency
-            )
-            ExchangeRate.objects.get_or_create(
-                currency=currency,
-                date=date(*map(lambda x: int(x), data.date.split("-"))),
-                defaults={"exchange_rate": data.exchange_rate},
-            )
+    @celery_app.task(name="scrap_data")
+    def single_pass(link):
+        raw_data = Dispatcher.prepare_raw_data(link)
+        if raw_data == "":
+            return
+
+        parsed_data = DataParser(raw_data).parse_data()
+        cleaned_data = DataCleaner(parsed_data)
+
+        currency, _ = Currency.objects.get_or_create(
+            base_currency=cleaned_data.base_currency,
+            target_currency=cleaned_data.target_currency,
+        )
+        ExchangeRate.objects.get_or_create(
+            currency=currency,
+            date=date(*map(lambda x: int(x), cleaned_data.date.split("-"))),
+            defaults={"exchange_rate": cleaned_data.exchange_rate},
+        )
 
 
 class DataFetcher:
