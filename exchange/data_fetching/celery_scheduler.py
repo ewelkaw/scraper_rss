@@ -1,23 +1,12 @@
-from celery import Celery
-from .crawler import run_scrapping
-
-app = Celery()
+from data_fetching.celery import celery_app
+from data_fetching.crawler import run_scrapping
 
 
-class Config:
-    enable_utc = True
-    timezone = "Europe/Warsaw"
-    broker_url = "redis://redis:6379/0"
-
-
-app.config_from_object(Config)
-
-
-@app.on_after_configure.connect
+@celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(60.0 * 10, crawler_task.s(), name="add every 10")
+    sender.add_periodic_task(10.0, crawler_task.s(), name="add every 10")
 
 
-@app.task
+@celery_app.task
 def crawler_task():
     run_scrapping()
