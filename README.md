@@ -5,6 +5,8 @@ RSS scraper for reading exchange rates from the European Central Bank web page.
 
 1. make build
 2. make run
+3. make migrate
+4. make makemigrations
 
 ## API USAGE:
 1. There is a possibility to use currency shortcut to get all data for given currency like below:
@@ -78,13 +80,11 @@ python manage.py createsuperuser
 ### Django tests
 
 ```
-cd exchange
-python manage.py test
+make test-django
 ```
 
 ### Fetcher test
 
 ```
-cd exchange
-pytest tests/
+make test-python
 ```
