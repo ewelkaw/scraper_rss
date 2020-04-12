@@ -10,7 +10,7 @@ celery==4.3.0
 chardet==3.0.4
 Click==7.0
 decorator==4.4.0
-Django==2.2.8
+Django==2.2.10
 djangorestframework==3.10.3
 idna==2.8
 importlib-metadata==0.23
